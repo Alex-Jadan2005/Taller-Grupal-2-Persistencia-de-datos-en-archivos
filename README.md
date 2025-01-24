@@ -58,7 +58,7 @@ object EstudiantesDAO {
 
 ### 4. En el mismo programa agregue la funcionalidad para obtener de la base de datos todos los registros de Estudiantes. 
 
-Datos en el DAO:
+Datos en EstudiantesDAO:
 
 ```sql
 //Obtener todos los estudiantes de la base de datos
