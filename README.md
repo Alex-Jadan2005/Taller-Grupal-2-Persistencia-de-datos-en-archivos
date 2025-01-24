@@ -58,6 +58,8 @@ object EstudiantesDAO {
 
 ### 4. En el mismo programa agregue la funcionalidad para obtener de la base de datos todos los registros de Estudiantes. 
 
+Datos en el DAO:
+
 ```sql
 //Obtener todos los estudiantes de la base de datos
   def getAll: IO[List[Estudiante]] = {
@@ -71,3 +73,16 @@ object EstudiantesDAO {
   }
 ```
 
+Inovacion en el main:
+
+```sql
+  // Secuencia de operaciones IO usando for-comprehension
+  def run: IO[Unit] = for {
+    result <- EstudiantesDAO.insertAll(estudiantes)  // Inserta datos y extrae resultado con <-
+    _ <- IO.println(s"Registros insertados: ${result.size}")  // Imprime cantidad
+
+    // Obtener todos los registros y los imprime
+    allStudents <- EstudiantesDAO.getAll
+    _ <- allStudents.traverse(s => IO.println(s))
+  } yield ()  // Completa la operación
+```
