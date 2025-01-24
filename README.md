@@ -21,3 +21,53 @@ Pablo,9,19,M
 Daniel,10,20,M
 ```
 
+### 2. Genere la tabla en MYSQL para esta información.
+
+```sql
+CREATE TABLE estudiantes (
+    nombre VARCHAR(50),
+    edad INT,
+    calificacion INT,
+    genero varchar(1)
+);
+```
+
+### 3. Elabore un programa que inyecte los datos del archivo CSV a la base de datos. 
+
+```scala
+object EstudiantesDAO {
+  def insert(estudiante: Estudiante): ConnectionIO[Int] = {
+    sql"""
+       INSERT INTO estudiantes (nombre, edad, calificacion, genero)
+       VALUES (
+         ${estudiante.nombre},
+         ${estudiante.edad},
+         ${estudiante.calificacion},
+         ${estudiante.genero.toString}
+       )
+     """.update.run
+  }
+  def insertAll(estudiantes: List[Estudiante]): IO[List[Int]] = {
+    Database.transactor.use { xa =>
+      estudiantes.traverse(t => insert(t).transact(xa))
+    }
+  }
+
+```
+
+
+### 4. En el mismo programa agregue la funcionalidad para obtener de la base de datos todos los registros de Estudiantes. 
+
+```sql
+//Obtener todos los estudiantes de la base de datos
+  def getAll: IO[List[Estudiante]] = {
+    val query = sql"""
+        SELECT nombre, edad, calificacion, genero
+        FROM estudiantes
+      """.query[Estudiante].to[List] // Ejecuta la consulta y mapea a una lista de Estudiantes
+    Database.transactor.use { xa =>
+      query.transact(xa)
+    }
+  }
+```
+
